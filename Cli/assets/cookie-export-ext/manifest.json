@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "cookie-export-local",
+  "version": "1.0",
+  "description": "One-shot LOCAL cookie export for clean profile migration. Reads this profile's cookies via the official chrome.cookies API and POSTs them ONLY to http://127.0.0.1 (no internet egress).",
+  "permissions": ["cookies", "alarms"],
+  "host_permissions": ["<all_urls>"],
+  "background": { "service_worker": "sw.js" },
+  "action": { "default_title": "Export cookies to 127.0.0.1:8765" }
+}

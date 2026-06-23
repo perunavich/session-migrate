@@ -1,0 +1,85 @@
+# session-migrate C# — formatting + analyzer rules.
+# `dotnet format` enforces formatting; StyleCop reports style as warnings.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+indent_style = space
+trim_trailing_whitespace = true
+
+[*.{cs,csproj,props,targets}]
+indent_size = 4
+
+[*.{json,yml,yaml}]
+indent_size = 2
+
+[*.cs]
+# --- .NET / C# code style ---
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_using_directive_placement = outside_namespace:warning
+dotnet_sort_system_directives_first = true
+csharp_prefer_braces = true:warning
+csharp_style_var_for_built_in_types = false:silent
+csharp_style_var_when_type_is_apparent = true:silent
+csharp_style_expression_bodied_methods = when_on_single_line:silent
+dotnet_style_qualification_for_field = false:warning
+dotnet_style_qualification_for_property = false:warning
+dotnet_style_readonly_field = true:warning
+
+# Naming: const + static readonly -> PascalCase; private *instance* fields -> _camelCase.
+# (We want underscore instance fields, which StyleCop's SA1309 forbids — SA1309 is off below.)
+# Order matters: the const/static-readonly rules come first so they win over the general one.
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+dotnet_naming_style.underscore_prefix.capitalization = camel_case
+dotnet_naming_style.underscore_prefix.required_prefix = _
+
+dotnet_naming_symbols.constants.applicable_kinds = field
+dotnet_naming_symbols.constants.required_modifiers = const
+dotnet_naming_rule.constants_pascal.severity = warning
+dotnet_naming_rule.constants_pascal.symbols = constants
+dotnet_naming_rule.constants_pascal.style = pascal_case
+
+dotnet_naming_symbols.static_readonly.applicable_kinds = field
+dotnet_naming_symbols.static_readonly.required_modifiers = static,readonly
+dotnet_naming_rule.static_readonly_pascal.severity = warning
+dotnet_naming_rule.static_readonly_pascal.symbols = static_readonly
+dotnet_naming_rule.static_readonly_pascal.style = pascal_case
+
+dotnet_naming_symbols.private_instance_fields.applicable_kinds = field
+dotnet_naming_symbols.private_instance_fields.applicable_accessibilities = private
+dotnet_naming_rule.private_fields_underscore.severity = warning
+dotnet_naming_rule.private_fields_underscore.symbols = private_instance_fields
+dotnet_naming_rule.private_fields_underscore.style = underscore_prefix
+
+# --- StyleCop: turn off the pedantic rules, keep the useful ones as warnings ---
+dotnet_diagnostic.SA1633.severity = none   # file must have header
+dotnet_diagnostic.SA1101.severity = none   # prefix local calls with this.
+dotnet_diagnostic.SA1309.severity = none   # field must not begin with underscore
+dotnet_diagnostic.SA1413.severity = none   # trailing comma in multiline initializers
+dotnet_diagnostic.SA1623.severity = none   # property doc text must match a template
+dotnet_diagnostic.SA1206.severity = none   # keyword ordering (static readonly vs readonly static)
+dotnet_diagnostic.SA0001.severity = none   # XML comment analysis disabled (no doc file)
+dotnet_diagnostic.SA1615.severity = none   # return value documentation optional (no empty stubs)
+dotnet_diagnostic.SA1611.severity = none   # parameter docs optional; a good summary suffices
+dotnet_diagnostic.SA1618.severity = none   # type-parameter docs optional
+dotnet_diagnostic.SA1642.severity = none   # no "Initializes a new instance…" constructor boilerplate
+dotnet_diagnostic.SA1402.severity = none   # allow a small record co-located with its primary type
+dotnet_diagnostic.SA1649.severity = none   # file name need not match the first (co-located) type
+dotnet_diagnostic.SA1118.severity = none   # allow multi-line collection-expression arguments
+dotnet_diagnostic.SA1600.severity = none   # document by judgment, not a blanket mandate
+dotnet_diagnostic.SA1117.severity = none   # allow grouped multi-line parameter lists (P/Invoke etc.)
+dotnet_diagnostic.SA1202.severity = none   # logical member grouping over strict accessibility order
+dotnet_diagnostic.SA1204.severity = none   # private helpers may sit below the public members they serve
+
+[Core.Tests/**.cs]
+# Tests don't need doc comments or strict member ordering.
+dotnet_diagnostic.SA1600.severity = none   # elements must be documented
+dotnet_diagnostic.SA1202.severity = none   # public-before-private ordering
+
+[Ui/**.cs]
+# The UI is the app shell, not a public API — no forced XML docs.
+dotnet_diagnostic.SA1600.severity = none   # elements must be documented
+dotnet_diagnostic.SA1642.severity = none   # constructor summary standard text
+dotnet_diagnostic.SA1204.severity = none   # group command handlers by feature, not by static-ness

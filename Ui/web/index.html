@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://app/styles.css" />
+  <title>session-migrate</title>
+</head>
+<body>
+  <header class="topbar">
+    <span class="mark"><span class="dot"></span>session-migrate</span>
+  </header>
+
+  <main class="main">
+    <div class="lede">
+      <h1>What would survive a move?</h1>
+      <p>Pick a source profile and inspect its sessions. Bearer cookies migrate cleanly; device-bound
+         (DBSC) accounts are flagged honestly. Nothing leaves this machine.</p>
+    </div>
+
+    <section class="panel">
+      <div class="field">
+        <span class="cap">Browser</span>
+        <select id="browser"><option>scanning…</option></select>
+      </div>
+      <div class="field">
+        <span class="cap">Profile</span>
+        <select id="profile"><option>—</option></select>
+      </div>
+      <span class="grow"></span>
+      <button class="btn ghost" id="migrate">
+        <svg class="icn" width="15" height="15" viewBox="0 0 16 16"><path d="M3 8h9M9 5l3 3-3 3"/><path d="M13 3v10"/></svg>
+        Migrate full profile…
+      </button>
+      <button class="btn" id="analyze">
+        <svg class="icn" width="15" height="15" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+        Analyze
+      </button>
+    </section>
+
+    <section class="panel">
+      <div class="field grow2">
+        <span class="cap">Bundle passphrase</span>
+        <input type="password" id="passphrase" class="pw" placeholder="protects the exported key" autocomplete="off" />
+      </div>
+      <span class="grow"></span>
+      <button class="btn ghost" id="export">
+        <svg class="icn" width="15" height="15" viewBox="0 0 16 16"><path d="M8 2v8M5 7l3 3 3-3"/><path d="M3 13h10"/></svg>
+        Export bundle…
+      </button>
+      <button class="btn ghost" id="import">
+        <svg class="icn" width="15" height="15" viewBox="0 0 16 16"><path d="M8 10V2M5 5l3-3 3 3"/><path d="M3 13h10"/></svg>
+        Import bundle…
+      </button>
+    </section>
+
+    <section class="results hidden" id="results">
+      <div class="result-head">
+        <span class="h">Report</span>
+        <span class="name" id="r-name">—</span>
+        <span class="badge" id="r-badge" hidden>sample data</span>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat">
+          <span class="v" id="s-total">0</span>
+          <span class="l"><svg class="icn ic" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><circle cx="6" cy="6" r="1"/><circle cx="10" cy="9" r="1"/></svg>cookies</span>
+        </div>
+        <div class="stat">
+          <span class="v" id="s-hosts">0</span>
+          <span class="l"><svg class="icn ic" width="13" height="13" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M2 8h12M8 2c2 2 2 10 0 12M8 2c-2 2-2 10 0 12"/></svg>hosts</span>
+        </div>
+        <div class="stat">
+          <span class="v accent" id="s-bearer">0</span>
+          <span class="l">bearer · migrates</span>
+        </div>
+        <div class="stat">
+          <span class="v dim" id="s-bound">0</span>
+          <span class="l">app-bound · 1 re-login</span>
+        </div>
+      </div>
+
+      <div class="banner hidden" id="dbsc">
+        <svg class="icn ic" width="17" height="17" viewBox="0 0 18 18"><path d="M9 1.5 15 4v5c0 3.5-2.5 6-6 7.5C5.5 15 3 12.5 3 9V4z"/><path d="M9 6v3M9 11.5v.5"/></svg>
+        <span class="tx"><b>Device-bound session present</b> (Google / Microsoft DBSC). The signing key
+          lives in this machine's TPM — on another machine these need <b>1 re-login</b>. Same-machine
+          migration is supported.</span>
+      </div>
+
+      <div class="sites">
+        <div class="cap">Top sites</div>
+        <div id="site-list"></div>
+      </div>
+    </section>
+
+    <section class="results hidden" id="migration">
+      <div class="result-head">
+        <span class="h">Migrated to</span>
+        <span class="name" id="m-dest">—</span>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat">
+          <span class="v" id="m-files">0</span>
+          <span class="l">files copied</span>
+        </div>
+        <div class="stat">
+          <span class="v accent" id="m-rekeyed">0</span>
+          <span class="l">values re-keyed</span>
+        </div>
+      </div>
+
+      <div class="sites">
+        <div class="cap">Stores</div>
+        <div id="store-list"></div>
+      </div>
+
+      <div class="banner">
+        <svg class="icn ic" width="17" height="17" viewBox="0 0 18 18"><path d="M9 1.5 15 4v5c0 3.5-2.5 6-6 7.5C5.5 15 3 12.5 3 9V4z"/><path d="M6.5 9 8 10.5 11.5 7"/></svg>
+        <span class="tx">Bearer cookies and passwords are re-keyed and ready. <b>App-Bound (v20) and DBSC
+          sessions stay on this machine</b> — sign into those once on the new machine. Point a Chromium
+          browser at the destination's User Data folder to use the migrated profile.</span>
+      </div>
+    </section>
+
+    <section class="empty hidden" id="empty"></section>
+  </main>
+
+  <footer class="foot">
+    <span>v10 / v11 bearer → reseal</span>
+    <span>v20 app-bound → harvest</span>
+    <span class="spacer"></span>
+    <span><kbd>offline</kbd> · re-encrypts on each end</span>
+  </footer>
+
+  <script src="https://app/app.js"></script>
+</body>
+</html>
