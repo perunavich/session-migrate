@@ -1,0 +1,17 @@
+# .NET build output
+bin/
+obj/
+
+# Published binaries (shipped as release assets, not committed)
+publish/
+dist/
+
+# IDE
+.vs/
+*.user
+*.suo
+
+# Test/coverage artifacts
+[Tt]est[Rr]esults/
+*.coverage
+*.trx
