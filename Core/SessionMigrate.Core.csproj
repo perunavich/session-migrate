@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.0" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.17" />
     <!-- Use Windows' own winsqlite3.dll (OS-patched) rather than shipping the bundled
          e_sqlite3 native, which had a known high-severity advisory. No native binary ships. -->
-    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="9.0.0" />
-    <PackageReference Include="SQLitePCLRaw.bundle_winsqlite3" Version="2.1.10" />
-    <PackageReference Include="System.Management" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="9.0.17" />
+    <PackageReference Include="SQLitePCLRaw.bundle_winsqlite3" Version="2.1.11" />
+    <PackageReference Include="System.Management" Version="9.0.17" />
   </ItemGroup>
 
 </Project>
